@@ -176,6 +176,15 @@ require('lazy').setup({
       },
     },
   },
+  { -- Adds :Git command and more
+    'tpope/vim-fugitive',
+  },
+  { -- Github integration, see README for token generation instructions
+    'tpope/vim-rhubarb',
+    init = function()
+      -- vim.g.github_enterprise_urls = { 'enterprise github url' }
+    end,
+  },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
