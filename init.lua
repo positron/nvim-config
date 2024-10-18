@@ -874,12 +874,18 @@ require('lazy').setup({
     'max397574/better-escape.nvim',
     opts = {
       default_mappings = true,
+      -- TODO: remove default mappings from visual and search mode
+      -- Explanation of not commonly used modes:
+      -- t: terminal
+      -- c: command-line (including search)
+      -- s: select
       mappings = {
         i = { k = { j = '<Esc>' } },
-        c = { k = { j = '<Esc>' } },
+        -- c = { k = { j = '<Esc>' } },
         t = { k = { j = '<C-\\><C-n>' } },
         v = { k = { j = '<Esc>' } },
         s = { k = { j = '<Esc>' } },
+        -- v = { k = { j = '<Esc>' } },
       },
     },
   },
