@@ -43,6 +43,7 @@ end)
 
 -- Enable break indent
 vim.opt.breakindent = true
+vim.opt.textwidth = 110
 
 -- Save undo history
 vim.opt.undofile = true
@@ -167,15 +168,17 @@ require('lazy').setup({
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
+      -- example opts if no nerdfont
+      -- signs = {
+      --  add = { text = '+' },
+      --  change = { text = '~' },
+      --  delete = { text = '_' },
+      --  topdelete = { text = '‾' },
+      --  changedelete = { text = '~' },
+      --},
     },
   },
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
   { -- Adds :Git command and more
     'tpope/vim-fugitive',
   },
@@ -251,6 +254,7 @@ require('lazy').setup({
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>g', group = '[G]o', mode = { 'n', 'v' } },
       },
     },
   },
@@ -865,7 +869,6 @@ require('lazy').setup({
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
-  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
   require 'kickstart.plugins.conjure',
 
   -- map jk and kj to escape in all modes, with no delays
@@ -883,7 +886,6 @@ require('lazy').setup({
         i = { k = { j = '<Esc>' } },
         -- c = { k = { j = '<Esc>' } },
         t = { k = { j = '<C-\\><C-n>' } },
-        v = { k = { j = '<Esc>' } },
         s = { k = { j = '<Esc>' } },
         -- v = { k = { j = '<Esc>' } },
       },
