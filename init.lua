@@ -1,3 +1,12 @@
+-- Source custom work or machine-specific config. Could contain secrets, internal URLs, etc.
+local local_config = vim.fn.expand '~/.config/local-nvim/init.lua'
+
+local file = io.open(local_config, 'r')
+if file ~= nil then
+  io.close(file)
+  dofile(local_config)
+end
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
