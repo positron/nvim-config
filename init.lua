@@ -871,6 +871,11 @@ require('lazy').setup({
   -- require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.conjure',
 
+  -- remember last cursor position when reopening a file
+  {
+    'farmergreg/vim-lastplace',
+  },
+
   -- map jk and kj to escape in all modes, with no delays
   -- it does jk by default, so add kj since I like to mash both keys simultaneously
   {
