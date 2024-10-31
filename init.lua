@@ -874,6 +874,19 @@ require('lazy').setup({
   -- require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.conjure',
 
+  -- auto save and restore sessions
+  {
+    'rmagatti/auto-session',
+    lazy = false,
+
+    ---enables autocomplete for opts
+    ---@module "auto-session"
+    ---@type AutoSession.Config
+    opts = {
+      suppressed_dirs = { '~/', '~/Downloads', '/', '/etc' },
+    },
+  },
+
   -- remember last cursor position when reopening a file
   {
     'farmergreg/vim-lastplace',
