@@ -874,6 +874,70 @@ require('lazy').setup({
   -- require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.conjure',
 
+  { -- s-expression editing: https://github.com/snoe/vim-sexp
+    'snoe/vim-sexp', -- This is a fork of guns/vim-sexp with the addition of not moving the cursor when slurping and barfing
+    init = function()
+      -- smart bracket and double quote matching stuff
+      vim.g.sexp_enable_insert_mode_mappings = 1
+
+      -- NOTE! To get the default meta mappings to work you need to make sure your keyboard maps Option to a true Meta.
+      -- On iTerm2 you can do this in Preferences -> Profiles -> Keys. The built in terminal app also supports meta.
+      -- Most other terminals just support alt, which is an escape immediately followed by the key.
+      --
+      -- In Mac OS option+any letter key produces a special character. Here we just map those special characters to get the
+      -- same effect for terminals without escape sequences.
+      --
+      -- NOTE: Option-Shift-k is special. It produces the apple logo but only if the focus is on a "text" area. Some terminals
+      -- support this and some don't.
+      vim.g.sexp_mappings = {
+        sexp_move_to_prev_element_head = '∫',
+        sexp_move_to_next_element_head = '∑',
+        sexp_move_to_prev_element_tail = 'g´',
+        sexp_move_to_next_element_tail = '´',
+        sexp_flow_to_prev_close = '“',
+        sexp_flow_to_next_open = '‘',
+        sexp_flow_to_prev_open = '”',
+        sexp_flow_to_next_close = '’',
+        sexp_flow_to_prev_leaf_head = 'ı',
+        sexp_flow_to_next_leaf_head = '„',
+        sexp_flow_to_prev_leaf_tail = '˝',
+        sexp_flow_to_next_leaf_tail = '´',
+        sexp_swap_list_backward = '˚',
+        sexp_swap_list_forward = '∆',
+        sexp_swap_element_backward = '˙',
+        sexp_swap_element_forward = '¬',
+        sexp_emit_head_element = 'Ô',
+        sexp_emit_tail_element = '',
+        sexp_capture_prev_element = 'Ó',
+        sexp_capture_next_element = 'Ò',
+      }
+      -- " Alternative: Copy M-* mappings to be the special vim alt escape sequence.
+      -- " This sucks becauase if you hit escape then a letter too fast it'll trigger.
+      -- "let g:sexp_mappings = {
+      -- "    \ 'sexp_move_to_prev_element_head': 'b',
+      -- "    \ 'sexp_move_to_next_element_head': 'w',
+      -- "    \ 'sexp_move_to_prev_element_tail': 'ge',
+      -- "    \ 'sexp_move_to_next_element_tail': 'e',
+      -- "    \ 'sexp_flow_to_prev_close':        '[',
+      -- "    \ 'sexp_flow_to_next_open':         ']',
+      -- "    \ 'sexp_flow_to_prev_open':         '{',
+      -- "    \ 'sexp_flow_to_next_close':        '}',
+      -- "    \ 'sexp_flow_to_prev_leaf_head':    'B',
+      -- "    \ 'sexp_flow_to_next_leaf_head':    'W',
+      -- "    \ 'sexp_flow_to_prev_leaf_tail':    'G',
+      -- "    \ 'sexp_flow_to_next_leaf_tail':    'E',
+      -- "    \ 'sexp_swap_list_backward':        'k',
+      -- "    \ 'sexp_swap_list_forward':         'j',
+      -- "    \ 'sexp_swap_element_backward':     'h',
+      -- "    \ 'sexp_swap_element_forward':      'l',
+      -- "    \ 'sexp_emit_head_element':         'J',
+      -- "    \ 'sexp_emit_tail_element':         'K',
+      -- "    \ 'sexp_capture_prev_element':      'H',
+      -- "    \ 'sexp_capture_next_element':      'L',
+      -- "    \ }
+    end,
+  },
+
   -- auto save and restore sessions
   {
     'rmagatti/auto-session',
