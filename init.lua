@@ -938,6 +938,11 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'jidn/vim-dbml',
+    ft = 'dbml',
+  },
+
   -- auto save and restore sessions
   {
     'rmagatti/auto-session',
