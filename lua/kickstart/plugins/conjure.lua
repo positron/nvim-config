@@ -37,7 +37,9 @@ return {
       vim.g['conjure#client#clojure#nrepl#mapping#run_current_ns_tests'] = 'rnt'
       vim.g['conjure#client#clojure#nrepl#mapping#run_all_tests'] = 'rat'
 
+      -- TODO: Issue I filed: wqa doesn't work https://github.com/Olical/conjure/issues/644
       -- TODO: Make gd do go to definition?
+      -- TODO: make cpp etc work
     end,
 
     -- Optional cmp-conjure integration
