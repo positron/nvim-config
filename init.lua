@@ -126,6 +126,11 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.keymap.set('n', '<leader>ev', ':split $MYVIMRC<CR>', { noremap = true, silent = false })
 vim.keymap.set('n', '<leader>sv', ':source $MYVIMRC<CR>', { noremap = true, silent = false })
 
+-- Work around running `:wqa` when an invisible conjure terminal window is open
+-- Issue I filed: wqa doesn't work https://github.com/Olical/conjure/issues/644
+vim.cmd [[cabbrev xa wa\|qa]]
+vim.cmd [[cabbrev wqa wa\|qa]]
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
