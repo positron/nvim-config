@@ -99,15 +99,6 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -191,6 +182,37 @@ require('lazy').setup({
     'tpope/vim-rhubarb',
     init = function()
       -- vim.g.github_enterprise_urls = { 'enterprise github url' }
+    end,
+  },
+
+  {
+    'christoomey/vim-tmux-navigator',
+    cmd = {
+      'TmuxNavigateLeft',
+      'TmuxNavigateDown',
+      'TmuxNavigateUp',
+      'TmuxNavigateRight',
+      'TmuxNavigatePrevious',
+      'TmuxNavigatorProcessList',
+    },
+    keys = {
+      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
+      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
+      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
+      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
+    },
+    init = function()
+      -- don't navigate past the edge to a tmux pane if the vim pane is zoomed
+      vim.g.tmux_navigator_disable_when_zoomed = 1
+
+      -- I don't want the previous pane mapping, so disable mappings and make my own below
+      vim.g.tmux_navigator_no_mappings = 1
+    end,
+    config = function()
+      vim.keymap.set('n', '<C-h>', ':TmuxNavigateLeft<CR>', { silent = true })
+      vim.keymap.set('n', '<C-j>', ':TmuxNavigateDown<CR>', { silent = true })
+      vim.keymap.set('n', '<C-k>', ':TmuxNavigateUp<CR>', { silent = true })
+      vim.keymap.set('n', '<C-l>', ':TmuxNavigateRight<CR>', { silent = true })
     end,
   },
 
