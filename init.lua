@@ -405,6 +405,29 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'akinsho/bufferline.nvim',
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    opts = {
+      -- weird nested opts because bufferline requires an explicit .setup call
+      -- or something like that
+      options = {
+        mode = 'tabs',
+        separator_style = 'slant',
+        diagnostics = 'nvim_lsp',
+        numbers = 'ordinal',
+        offsets = {
+          {
+            filetype = 'NvimTree',
+            text = 'File Explorer',
+            highlight = 'Directory',
+            separator = true,
+          },
+        },
+      },
+    },
+  },
+
   -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
