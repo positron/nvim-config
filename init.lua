@@ -891,6 +891,32 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
+  -- pkl isn't automatically supported by treesitter, so they have this whole snippet to install it
+  -- https://github.com/nvim-treesitter/nvim-treesitter
+  {
+    'apple/pkl-neovim',
+    lazy = true,
+    ft = 'pkl',
+    dependencies = {
+      {
+        'nvim-treesitter/nvim-treesitter',
+        build = function(_)
+          vim.cmd 'TSUpdate'
+        end,
+      },
+    },
+    build = function()
+      require('pkl-neovim.internal').init()
+
+      -- Set up syntax highlighting.
+      vim.cmd 'TSInstall pkl'
+    end,
+    config = function()
+      -- Set up snippets.
+      require('luasnip.loaders.from_snipmate').lazy_load()
+    end,
+  },
+
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
