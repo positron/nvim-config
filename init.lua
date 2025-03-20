@@ -920,7 +920,6 @@ require('lazy').setup({
   },
 
   -- pkl isn't automatically supported by treesitter, so they have this whole snippet to install it
-  -- https://github.com/nvim-treesitter/nvim-treesitter
   {
     'apple/pkl-neovim',
     lazy = true,

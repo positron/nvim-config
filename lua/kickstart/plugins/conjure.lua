@@ -4,7 +4,7 @@
 return {
   {
     'Olical/conjure',
-    ft = { 'clojure', 'fennel', 'python' }, -- etc
+    ft = { 'clojure', 'fennel' }, -- python is possible, but couldn't get useful things to work (e.g. eval file and print output)
     lazy = true,
     init = function()
       -- Set configuration options here
