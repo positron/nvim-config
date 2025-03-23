@@ -85,6 +85,13 @@ vim.opt.scrolloff = 5
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Paste in visual mode without overwriting register
+vim.keymap.set('x', 'p', '"_dP')
+
+-- Better indenting, don't lose selection when shifting
+vim.keymap.set('v', '<', '<gv')
+vim.keymap.set('v', '>', '>gv')
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
