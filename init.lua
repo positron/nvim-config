@@ -1104,7 +1104,7 @@ require('lazy').setup({
       -- c: command-line (including search)
       -- s: select
       mappings = {
-        i = { k = { j = '<Esc>' } },
+        i = { k = { j = '<Esc>:w<CR>' } },
         -- c = { k = { j = '<Esc>' } },
         t = { k = { j = '<C-\\><C-n>' } },
         s = { k = { j = '<Esc>' } },
