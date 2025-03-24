@@ -608,6 +608,9 @@ require('lazy').setup({
           },
         },
         ruff = {},
+        mypy = {
+          -- TODO: experiment with dmypy (daemon) if perf is an issue
+        },
 
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
