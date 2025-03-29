@@ -121,6 +121,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.keymap.set('n', '<leader>ev', ':split $MYVIMRC<CR>', { noremap = true, silent = false })
 vim.keymap.set('n', '<leader>sv', ':source $MYVIMRC<CR>', { noremap = true, silent = false })
 
+-- Abbreviations
+-- bash strict mode
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'sh',
+  callback = function()
+    vim.cmd.iabbrev { 'shebang', '#!/usr/bin/env bash\n\n# unofficial bash "strict mode"\nset -euo pipefail\nIFS=$\'\\n\\t\'' }
+  end,
+})
+
 -- Work around running `:wqa` when an invisible conjure terminal window is open
 -- Issue I filed: wqa doesn't work https://github.com/Olical/conjure/issues/644
 vim.cmd [[cabbrev xa wa\|qa]]
