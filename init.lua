@@ -135,6 +135,16 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.cmd [[cabbrev xa wa\|qa]]
 vim.cmd [[cabbrev wqa wa\|qa]]
 
+-- python helper fn
+local get_venv_command = function(command)
+  local venv_cmd = vim.env.VIRTUAL_ENV .. '/bin/' .. command
+  if vim.fn.executable(venv_cmd) then
+    return venv_cmd
+  else
+    return command
+  end
+end
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -620,9 +630,10 @@ require('lazy').setup({
           },
         },
         ruff = {},
-        mypy = {
-          -- TODO: experiment with dmypy (daemon) if perf is an issue
-        },
+        -- TODO: integrate mypy another way. The lsp version only works with pylsp and I'm used basedpyright
+        -- mypy = {
+        --   -- TODO: experiment with dmypy (daemon) if perf is an issue
+        -- },
 
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -698,7 +709,7 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -718,7 +729,10 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         python = function(bufnr)
-          if require('conform').get_formatter_info('ruff', bufnr).available then
+          local venv_ruff = get_venv_command 'ruff'
+          if vim.fn.executable(venv_ruff) then
+            return { ruff = { command = venv_ruff } }
+          elseif require('conform').get_formatter_info('ruff', bufnr).available then
             return { 'ruff' }
           else
             return { 'isort', 'black' }
