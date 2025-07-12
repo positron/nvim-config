@@ -92,15 +92,42 @@ vim.keymap.set('x', 'p', '"_dP')
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+-- quickfix list keymaps
+vim.keymap.set('n', '<leader>qj', ':cnext<CR>', { desc = 'Next quickfix' })
+vim.keymap.set('n', '<leader>qk', ':cprev<CR>', { desc = 'Previous quickfix' })
+vim.keymap.set('n', '<leader>q', function()
+  local qf_exists = false
+  local qf_focused = false
+
+  -- Check if quickfix window exists and if we're focused on it
+  for _, win in pairs(vim.fn.getwininfo()) do
+    if win.quickfix == 1 then
+      qf_exists = true
+      if win.winid == vim.fn.win_getid() then
+        qf_focused = true
+      end
+      break
+    end
+  end
+
+  if qf_focused then
+    -- Close if focused on quickfix
+    vim.cmd 'cclose'
+  elseif qf_exists then
+    -- Focus quickfix if it exists but not focused
+    vim.cmd 'copen'
+  else
+    -- Open quickfix with LSP diagnostics
+    vim.diagnostic.setqflist()
+    vim.cmd 'copen'
+  end
+end, { desc = 'Toggle/focus quickfix with LSP diagnostics' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
 --
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
+-- NOTE: This won't work in all terminal emulators/tmux/etc.
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- [[ Basic Autocommands ]]
