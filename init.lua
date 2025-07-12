@@ -364,13 +364,11 @@ require('lazy').setup({
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
-        -- You can put your default mappings / updates / etc. in here
-        --  All the info you're looking for is in `:help telescope.setup()`
-        --
         defaults = {
           file_ignore_patterns = { '%.git/', '%.vscode/' },
           mappings = {
-            i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+            i = { ['<c-f>'] = 'to_fuzzy_refine' },
+            n = { ['<c-f>'] = 'to_fuzzy_refine' },
           },
         },
         pickers = {
