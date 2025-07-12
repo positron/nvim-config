@@ -650,6 +650,12 @@ require('lazy').setup({
                 -- Ignore all files for analysis to exclusively use Ruff for linting
                 ignore = { '*' },
                 autoImportCompletions = true,
+
+                -- supposedly I need these to enable inline hints?
+                inlayHints = { callArgumentNames = true },
+                -- autoSearchPaths = true,
+                -- diagnosticMode = 'openFilesOnly',
+                -- useLibraryCodeForTypes = true,
               },
             },
           },
