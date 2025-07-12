@@ -8,7 +8,6 @@ if file ~= nil then
 end
 
 -- Set <space> as the leader key
--- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -77,6 +76,12 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 5
+
+-- [[ Configure LSP Diagnostics ]]
+-- Enable virtual text by default
+vim.diagnostic.config {
+  virtual_text = true,
+}
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -147,6 +152,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- hotkey to quickly edit and reload config
 vim.keymap.set('n', '<leader>ev', ':split $MYVIMRC<CR>', { noremap = true, silent = false })
 vim.keymap.set('n', '<leader>sv', ':source $MYVIMRC<CR>', { noremap = true, silent = false })
+
+-- Toggle LSP virtual text
+vim.keymap.set('n', '<leader>tv', function()
+  local current_config = vim.diagnostic.config()
+  vim.diagnostic.config {
+    virtual_text = not current_config.virtual_text,
+  }
+  local status = current_config.virtual_text and 'disabled' or 'enabled'
+  print('LSP virtual text ' .. status)
+end, { desc = '[T]oggle [V]irtual (diagnostic) text' })
 
 -- Abbreviations
 -- bash strict mode
