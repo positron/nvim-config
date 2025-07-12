@@ -137,7 +137,7 @@ vim.cmd [[cabbrev wqa wa\|qa]]
 
 -- python helper fn
 local get_venv_command = function(command)
-  local venv_cmd = vim.env.VIRTUAL_ENV .. '/bin/' .. command
+  local venv_cmd = (vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV .. '/bin/' or '') .. command
   if vim.fn.executable(venv_cmd) then
     return venv_cmd
   else
