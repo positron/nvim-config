@@ -514,8 +514,8 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
-      { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-      'williamboman/mason-lspconfig.nvim',
+      { 'mason-org/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
+      'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
@@ -524,6 +524,9 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
+
+      -- Allows extra capabilities provided by blink.cmp
+      -- 'Saghen/blink.cmp', -- TODO switch to this. Copy lots of config from https://github.com/nvim-lua/kickstart.nvim/blob/master/init.lua
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -649,65 +652,67 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      -- The servers table comprises of the following sub-tables:
+      -- 1. mason
+      -- 2. others
+      -- Both these tables have an identical structure of language server names as keys and
+      -- a table of language server configuration as values.
+      ---@class LspServersConfig
+      ---@field mason table<string, vim.lsp.Config>
+      ---@field others table<string, vim.lsp.Config>
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
+        mason = {
+          -- clangd = {},
+          -- gopls = {},
 
-        -- python - basedpyright lsp setup
-        --          https://docs.basedpyright.com/latest
-        --          configure pyright to defer to ruff for formatting and linting
-        basedpyright = {
-          settings = {
-            basedpyright = {
-              -- Using Ruff's import organizer
-              disableOrganizeImports = true,
-              analysis = {
-                -- Ignore all files for analysis to exclusively use Ruff for linting
-                ignore = { '*' },
-                autoImportCompletions = true,
+          -- python - basedpyright lsp setup
+          --          https://docs.basedpyright.com/latest
+          --          configure pyright to defer to ruff for formatting and linting
+          basedpyright = {
+            settings = {
+              basedpyright = {
+                -- Using Ruff's import organizer
+                disableOrganizeImports = true,
+                analysis = {
+                  -- Ignore all files for analysis to exclusively use Ruff for linting
+                  ignore = { '*' },
+                  autoImportCompletions = true,
 
-                -- supposedly I need these to enable inline hints?
-                inlayHints = { callArgumentNames = true },
-                -- autoSearchPaths = true,
-                -- diagnosticMode = 'openFilesOnly',
-                -- useLibraryCodeForTypes = true,
+                  -- supposedly I need these to enable inline hints?
+                  inlayHints = { callArgumentNames = true },
+                  -- autoSearchPaths = true,
+                  -- diagnosticMode = 'openFilesOnly',
+                  -- useLibraryCodeForTypes = true,
+                },
+              },
+            },
+          },
+          ruff = {},
+          -- mypy = {
+          -- TODO: integrate mypy another way. The lsp version only works with pylsp and I'm used basedpyright
+          -- TODO: experiment with dmypy (daemon) if perf is an issue
+          -- },
+
+          lua_ls = {
+            settings = {
+              Lua = {
+                completion = {
+                  callSnippet = 'Replace',
+                },
+                -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+                diagnostics = { disable = { 'missing-fields' } },
               },
             },
           },
         },
-        ruff = {},
-        -- TODO: integrate mypy another way. The lsp version only works with pylsp and I'm used basedpyright
-        -- mypy = {
-        --   -- TODO: experiment with dmypy (daemon) if perf is an issue
-        -- },
-
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
-
-        lua_ls = {
-          -- cmd = {...},
-          -- filetypes = { ...},
-          -- capabilities = {},
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              diagnostics = { disable = { 'missing-fields' } },
-            },
-          },
+        -- This table contains config for all language servers that are *not* installed via Mason.
+        -- Structure is identical to the mason table from above.
+        others = {
+          -- dartls = {},
         },
       }
 
-      local ensure_installed = vim.tbl_keys(servers or {})
+      local ensure_installed = vim.tbl_keys(servers.mason or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'django-template-lsp',
@@ -719,24 +724,27 @@ require('lazy').setup({
       --    :Mason
       --
       --  You can press `g?` for help in the `:Mason` menu.
-      require('mason').setup()
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      -- Either merge all additional server configs from the `servers.mason` and `servers.others` tables
+      -- to the default language server configs as provided by nvim-lspconfig or
+      -- define a custom server config that's unavailable on nvim-lspconfig.
+      for server, config in pairs(vim.tbl_extend('keep', servers.mason, servers.others)) do
+        if not vim.tbl_isempty(config) then
+          vim.lsp.config(server, config)
+        end
+      end
+
+      -- After configuring our language servers, we now enable them
       require('mason-lspconfig').setup {
-        -- Note! This will configure and run all LSP servers you have installed.
-        --       That's great, but if you have something installed you don't want
-        --       you have to remove it or it'll keep running
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        ensure_installed = {}, -- explicitly set to an empty table (this config installs via mason-tool-installer)
+        automatic_enable = true, -- automatically run vim.lsp.enable() for all servers that are installed via Mason
       }
+
+      -- Manually run vim.lsp.enable for all language servers that are *not* installed via Mason
+      if not vim.tbl_isempty(servers.others) then
+        vim.lsp.enable(vim.tbl_keys(servers.others))
+      end
     end,
   },
 
