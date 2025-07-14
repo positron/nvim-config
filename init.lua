@@ -80,12 +80,6 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 5
 
--- [[ Configure LSP Diagnostics ]]
--- Enable virtual text by default
-vim.diagnostic.config {
-  virtual_text = true,
-}
-
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -101,31 +95,32 @@ vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
 -- quickfix list keymaps
-vim.keymap.set('n', '<leader>qj', ':cnext<CR>', { desc = 'Next quickfix' })
-vim.keymap.set('n', '<leader>qk', ':cprev<CR>', { desc = 'Previous quickfix' })
+vim.keymap.set('n', '<leader>qj', function()
+  vim.diagnostic.setqflist()
+  vim.cmd 'cnext'
+end, { desc = 'Next quickfix' })
+vim.keymap.set('n', '<leader>qk', function()
+  vim.diagnostic.setqflist()
+  vim.cmd 'cprev'
+end, { desc = 'Previous quickfix' })
 vim.keymap.set('n', '<leader>q', function()
-  local qf_exists = false
   local qf_focused = false
 
-  -- Check if quickfix window exists and if we're focused on it
+  -- Check if we're currently focused on a quickfix window
   for _, win in pairs(vim.fn.getwininfo()) do
-    if win.quickfix == 1 then
-      qf_exists = true
-      if win.winid == vim.fn.win_getid() then
-        qf_focused = true
-      end
+    if win.quickfix == 1 and win.winid == vim.fn.win_getid() then
+      qf_focused = true
       break
     end
   end
 
   if qf_focused then
     -- Close if focused on quickfix
-    vim.cmd 'cclose'
-  elseif qf_exists then
-    -- Focus quickfix if it exists but not focused
-    vim.cmd 'copen'
+    vim.cmd 'tabdo windo cclose'
   else
-    -- Open quickfix with LSP diagnostics
+    -- Close all existing quickfix windows first
+    vim.cmd 'tabdo windo cclose'
+    -- Always update with latest diagnostics and open
     vim.diagnostic.setqflist()
     vim.cmd 'copen'
   end
@@ -635,6 +630,35 @@ require('lazy').setup({
         end,
         desc = 'LSP: Disable hover capability from Ruff',
       })
+
+      -- Diagnostic Config
+      -- See :help vim.diagnostic.Opts
+      vim.diagnostic.config {
+        severity_sort = true,
+        float = { border = 'rounded', source = 'if_many' },
+        underline = { severity = vim.diagnostic.severity.ERROR },
+        signs = vim.g.have_nerd_font and {
+          text = {
+            [vim.diagnostic.severity.ERROR] = '󰅚 ',
+            [vim.diagnostic.severity.WARN] = '󰀪 ',
+            [vim.diagnostic.severity.INFO] = '󰋽 ',
+            [vim.diagnostic.severity.HINT] = '󰌶 ',
+          },
+        } or {},
+        virtual_text = {
+          source = 'if_many',
+          spacing = 2,
+          -- format = function(diagnostic)
+          --   local diagnostic_message = {
+          --     [vim.diagnostic.severity.ERROR] = diagnostic.message,
+          --     [vim.diagnostic.severity.WARN] = diagnostic.message,
+          --     [vim.diagnostic.severity.INFO] = diagnostic.message,
+          --     [vim.diagnostic.severity.HINT] = diagnostic.message,
+          --   }
+          --   return diagnostic_message[diagnostic.severity]
+          -- end,
+        },
+      }
 
       -- nvim-lspconfig must be run first, then mason, then mason-lspconfig
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
