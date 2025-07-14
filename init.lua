@@ -30,6 +30,9 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Recommended by autosession
+vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  See `:help 'clipboard'`
@@ -1159,6 +1162,10 @@ require('lazy').setup({
     ---@type AutoSession.Config
     opts = {
       suppressed_dirs = { '~/', '~/Downloads', '/', '/etc' },
+      purge_after_minutes = 87800, -- two months
+    },
+    keys = {
+      { '<leader>S', '<cmd>SessionSearch<CR>', desc = 'Session search' },
     },
   },
 
