@@ -134,6 +134,7 @@ vim.keymap.set('n', '<leader>qk', function()
 end, { desc = 'Previous quickfix' })
 vim.keymap.set('n', '<leader>q', function()
   local qf_focused = false
+  local current_tab = vim.fn.tabpagenr()
 
   -- Check if we're currently focused on a quickfix window
   for _, win in pairs(vim.fn.getwininfo()) do
@@ -145,10 +146,12 @@ vim.keymap.set('n', '<leader>q', function()
 
   if qf_focused then
     -- Close if focused on quickfix
-    vim.cmd 'tabdo windo cclose'
+    vim.cmd 'silent! tabdo windo cclose'
+    vim.cmd('silent! tabn ' .. current_tab)
   else
     -- Close all existing quickfix windows first
-    vim.cmd 'tabdo windo cclose'
+    vim.cmd 'silent! tabdo windo cclose'
+    vim.cmd('silent! tabn ' .. current_tab)
     -- Always update with latest diagnostics and open
     vim.diagnostic.setqflist()
     vim.cmd 'copen'
