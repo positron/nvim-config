@@ -107,6 +107,17 @@ if vim.g.neovide then
 
   -- Operator-pending mode: paste after cursor
   vim.keymap.set('o', '<D-v>', '<Esc>"+p', { noremap = true })
+
+  -- Lower default font size
+  vim.g.neovide_scale_factor = 0.9
+
+  -- Font size adjustment with cmd + and cmd -
+  vim.keymap.set('n', '<D-=>', function()
+    vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * 1.1
+  end, { noremap = true, silent = true })
+  vim.keymap.set('n', '<D-->', function()
+    vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * 0.9
+  end, { noremap = true, silent = true })
 end
 
 -- [[ Basic Keymaps ]]
