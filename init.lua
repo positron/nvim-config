@@ -80,6 +80,35 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 5
 
+if vim.g.neovide then
+  -- In neovide, cmd-v is interpreted as literally the keys cmd and v so it just inserts `<D-v>`
+  -- Normal mode: paste after cursor
+  vim.keymap.set('n', '<D-v>', '"+p', { noremap = true })
+
+  -- Insert mode: save paste setting, enable paste, paste, restore setting
+  vim.keymap.set('i', '<D-v>', function()
+    local original_paste = vim.o.paste
+    vim.o.paste = true
+    vim.cmd 'normal! "+p'
+    vim.o.paste = original_paste
+  end, { noremap = true })
+
+  -- Visual mode: replace selection with clipboard
+  vim.keymap.set('v', '<D-v>', '"+p', { noremap = true })
+
+  -- Select mode: replace selection with clipboard
+  vim.keymap.set('s', '<D-v>', '<C-g>"+p', { noremap = true })
+
+  -- Command-line mode: paste into command
+  vim.keymap.set('c', '<D-v>', '<C-r>+', { noremap = true })
+
+  -- Terminal mode: paste into terminal
+  vim.keymap.set('t', '<D-v>', '<C-\\><C-n>"+pa', { noremap = true })
+
+  -- Operator-pending mode: paste after cursor
+  vim.keymap.set('o', '<D-v>', '<Esc>"+p', { noremap = true })
+end
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
