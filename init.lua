@@ -894,7 +894,7 @@ require('lazy').setup({
 
       -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
       -- which automatically downloads a prebuilt binary when enabled.
-      fuzzy = { implementation = 'prefer_rust_with_warning', use_frecency = true, use_proximity = true },
+      fuzzy = { implementation = 'prefer_rust_with_warning', frecency = { enabled = true }, use_proximity = true },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
