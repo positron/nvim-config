@@ -18,6 +18,13 @@ vim.g.maplocalleader = ' '
 
 vim.g.have_nerd_font = true
 
+-- Reset cmdheight after various operations. I have had problems for years, spanning back before
+-- nvim even, where cmdheight gets messed up on tmux resize events for hidden tabs.
+vim.api.nvim_create_autocmd({ 'VimResized', 'TabEnter', 'WinEnter' }, {
+  pattern = '*',
+  command = 'set cmdheight=1',
+})
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- For more options, you can see `:help option-list`
@@ -1236,7 +1243,7 @@ require('lazy').setup({
       purge_after_minutes = 87800, -- two months
     },
     keys = {
-      { '<leader>S', '<cmd>SessionSearch<CR>', desc = 'Session search' },
+      { '<leader>S', '<cmd>AutoSession search<CR>', desc = 'Session search' },
     },
   },
 
