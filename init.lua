@@ -7,6 +7,10 @@ if file ~= nil then
   dofile(local_config)
 end
 
+if vim.fn.filereadable(vim.fn.expand '~/.vimrc.local') == 1 then
+  vim.cmd('source ' .. vim.fn.expand '~/.vimrc.local')
+end
+
 -- Set <space> as the leader key
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
