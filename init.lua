@@ -1076,7 +1076,25 @@ require('lazy').setup({
         'query',
         'vim',
         'vimdoc',
+        'pkl',
       }
+
+      -- Register parsers not bundled with nvim-treesitter. The User TSUpdate
+      -- autocmd fires inside install/update after the parsers module is reloaded,
+      -- so this re-applies on every TSUpdate.
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'TSUpdate',
+        callback = function()
+          require('nvim-treesitter.parsers').pkl = {
+            install_info = {
+              url = 'https://github.com/apple/tree-sitter-pkl.git',
+              revision = 'v0.20.0',
+              files = { 'src/parser.c', 'src/scanner.c' },
+            },
+          }
+        end,
+      })
+
       require('nvim-treesitter').install(ensure_installed)
 
       local filetypes = {}
@@ -1094,19 +1112,12 @@ require('lazy').setup({
     end,
   },
 
-  -- pkl isn't automatically supported by treesitter, so they have this whole snippet to install it
+  -- pkl parser is installed via the nvim-treesitter spec above (User TSUpdate autocmd).
   {
     'apple/pkl-neovim',
     lazy = true,
     ft = 'pkl',
-    build = function()
-      require('pkl-neovim').init()
-
-      -- Set up syntax highlighting.
-      vim.cmd 'TSInstall pkl'
-    end,
     config = function()
-      -- Set up snippets.
       require('luasnip.loaders.from_snipmate').lazy_load()
     end,
   },
