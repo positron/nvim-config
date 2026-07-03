@@ -1079,21 +1079,53 @@ require('lazy').setup({
         'pkl',
       }
 
-      -- Register parsers not bundled with nvim-treesitter. The User TSUpdate
-      -- autocmd fires inside install/update after the parsers module is reloaded,
-      -- so this re-applies on every TSUpdate.
+      -- Register parsers not bundled with nvim-treesitter, plus master-branch
+      -- compat shims for plugins (telescope.nvim 0.1.x, etc.) that haven't
+      -- migrated to the main-branch API yet. The User TSUpdate autocmd fires
+      -- inside install/update after the parsers module is reloaded, so this
+      -- re-applies on every TSUpdate.
+      local function patch_parsers()
+        local p = require('nvim-treesitter.parsers')
+        p.pkl = {
+          install_info = {
+            url = 'https://github.com/apple/tree-sitter-pkl.git',
+            revision = 'v0.20.0',
+            files = { 'src/parser.c', 'src/scanner.c' },
+          },
+        }
+        p.ft_to_lang = function(ft)
+          return vim.treesitter.language.get_lang(ft) or ft
+        end
+        p.has_parser = function(lang)
+          if not lang or lang == '' then
+            return false
+          end
+          return pcall(vim.treesitter.language.add, lang)
+        end
+        p.get_buf_lang = function(bufnr)
+          return vim.treesitter.language.get_lang(vim.bo[bufnr or 0].filetype)
+        end
+        p.get_parser = function(bufnr, lang)
+          return vim.treesitter.get_parser(bufnr, lang)
+        end
+      end
       vim.api.nvim_create_autocmd('User', {
         pattern = 'TSUpdate',
-        callback = function()
-          require('nvim-treesitter.parsers').pkl = {
-            install_info = {
-              url = 'https://github.com/apple/tree-sitter-pkl.git',
-              revision = 'v0.20.0',
-              files = { 'src/parser.c', 'src/scanner.c' },
-            },
-          }
-        end,
+        callback = patch_parsers,
       })
+      patch_parsers()
+
+      -- Stub nvim-treesitter.configs (gone on main) for the same reason.
+      package.loaded['nvim-treesitter.configs'] = package.loaded['nvim-treesitter.configs']
+        or {
+          is_enabled = function()
+            return true
+          end,
+          get_module = function()
+            return {}
+          end,
+          setup = function() end,
+        }
 
       require('nvim-treesitter').install(ensure_installed)
 
