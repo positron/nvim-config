@@ -1,10 +1,11 @@
 -- Source custom work or machine-specific config. Could contain secrets, internal URLs, etc.
-local local_config = vim.fn.expand '~/.config/local-nvim/init.lua'
-
-local file = io.open(local_config, 'r')
-if file ~= nil then
-  io.close(file)
-  dofile(local_config)
+for _, name in ipairs { 'init.lua', 'work.lua' } do
+  local local_config = vim.fn.expand('~/.config/local-nvim/' .. name)
+  local file = io.open(local_config, 'r')
+  if file ~= nil then
+    io.close(file)
+    dofile(local_config)
+  end
 end
 
 if vim.fn.filereadable(vim.fn.expand '~/.vimrc.local') == 1 then
@@ -929,6 +930,11 @@ require('lazy').setup({
     opts = {
       notify_on_error = true,
       format_on_save = function(bufnr)
+        -- Per-buffer opt-out, e.g. set by work.lua for repos with their own formatting workflow
+        if vim.b[bufnr].disable_autoformat then
+          return
+        end
+
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
@@ -1085,7 +1091,7 @@ require('lazy').setup({
       -- inside install/update after the parsers module is reloaded, so this
       -- re-applies on every TSUpdate.
       local function patch_parsers()
-        local p = require('nvim-treesitter.parsers')
+        local p = require 'nvim-treesitter.parsers'
         p.pkl = {
           install_info = {
             url = 'https://github.com/apple/tree-sitter-pkl.git',
