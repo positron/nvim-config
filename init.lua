@@ -1316,6 +1316,29 @@ require('lazy').setup({
     opts = {},
   },
 
+  { -- Render markdown inline: headings, code blocks, tables, callouts, checkboxes
+    'MeanderingProgrammer/render-markdown.nvim',
+    ft = { 'markdown' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {
+      -- We lazy load on ft, so the treesitter highlighter has usually already
+      -- started (see the FileType autocmd in the nvim-treesitter spec above) by
+      -- the time this plugin disables the markdown conceal_lines directives.
+      -- Restarting it once clears the stale highlights.
+      restart_highlighter = true,
+      -- blink.cmp picks this up automatically via the in-process LSP
+      completions = { lsp = { enabled = true } },
+      -- No `latex` parser installed and no utftex/latex2text on PATH, so formula
+      -- rendering can't work anyway. Off to keep :checkhealth clean.
+      latex = { enabled = false },
+    },
+    keys = {
+      { '<leader>tm', '<cmd>RenderMarkdown buf_toggle<CR>', desc = '[T]oggle [m]arkdown rendering', ft = 'markdown' },
+    },
+  },
+
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
